@@ -11,6 +11,13 @@ function BenefitsHandler(db) {
 
             if (error) return next(error);
 
+            var i;
+            for (i in users) {
+                if (users[i]._id == req.session.userId) {
+                    res.redirect('/dashboard');
+                }
+            }
+
             return res.render("benefits", {
                 users: users,
                 user: {
