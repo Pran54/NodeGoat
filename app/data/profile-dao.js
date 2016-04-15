@@ -1,5 +1,27 @@
+var crypto = require('crypto'),
+algorithm = 'aes-256-ctr',
+password = 'admas69';
+
+function encrypt(text){
+    var cipher = crypto.createCipher(algorithm,password)
+    var crypted = cipher.update(text,'utf8','hex')
+    crypted += cipher.final('hex');
+    return crypted;
+}
+
+function decrypt(text){
+    var decipher = crypto.createDecipher(algorithm,password)
+    var dec = decipher.update(text,'hex','utf8')
+    dec += decipher.final('utf8');
+    return dec;
+}
+
+
+
 /* The ProfileDAO must be constructed with a connected database object */
 function ProfileDAO(db) {
+
+    var CryptoJS = require("crypto-js");
 
     "use strict";
 
@@ -20,6 +42,8 @@ function ProfileDAO(db) {
 
     this.updateUser = function(userId, firstName, lastName, ssn, dob, address, bankAcc, bankRouting, callback) {
 
+        console.log("UPDATING A USER...");
+
         // Create user document
         var user = {};
         if (firstName) {
@@ -38,7 +62,13 @@ function ProfileDAO(db) {
             user.bankRouting = bankRouting;
         }
         if (ssn) {
-            user.ssn = ssn; //<- what if your server gets hacked?
+
+            //console.log("Checkpoint 1: " + ssn);
+            user.ssn = encrypt(ssn);
+            //console.log(user.ssn);
+
+            // console.log(user.ssn)
+            //user.ssn = ssn; //<- what if your server gets hacked?
             //encrypt sensitive fields!
         }
         if (dob) {
@@ -72,6 +102,11 @@ function ProfileDAO(db) {
                 // sending it back to the user, so if you encrypted
                 // fields when you inserted them, you need to decrypt
                 // them before you can use them.
+                //console.log("Checkpoint 2");
+                //console.log(user.ssn);
+                user.ssn = decrypt(user.ssn);
+                //console.log(user.ssn);
+
                 callback(null, user);
             }
         );
