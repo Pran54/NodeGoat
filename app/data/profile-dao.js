@@ -21,8 +21,6 @@ function decrypt(text){
 /* The ProfileDAO must be constructed with a connected database object */
 function ProfileDAO(db) {
 
-    var CryptoJS = require("crypto-js");
-
     "use strict";
 
     /* If this constructor is called without the "new" operator, "this" points
