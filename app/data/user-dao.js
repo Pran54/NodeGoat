@@ -1,4 +1,20 @@
-var bcrypt = require("bcrypt-nodejs");
+var crypto = require('crypto'),
+algorithm = 'aes-256-ctr',
+password = 'admas69';
+
+function encrypt(text){
+  var cipher = crypto.createCipher(algorithm,password)
+  var crypted = cipher.update(text,'utf8','hex')
+  crypted += cipher.final('hex');
+  return crypted;
+}
+ 
+function decrypt(text){
+  var decipher = crypto.createDecipher(algorithm,password)
+  var dec = decipher.update(text,'hex','utf8')
+  dec += decipher.final('utf8');
+  return dec;
+}
 
 /* The UserDAO must be constructed with a connected database object */
 function UserDAO(db) {
@@ -22,13 +38,14 @@ function UserDAO(db) {
          ** Note: the bcrypt module helps fix this    **
          ***********************************************/
 
+         /** USING crypto **/
         // Create user document
         var user = {
             userName: userName,
             firstName: firstName,
             lastName: lastName,
             benefitStartDate: this.getRandomFutureDate(),
-            password: password //received from request param
+            password: encrypt(password) //received from request param
         };
 
         // Add email if set
@@ -89,7 +106,9 @@ function UserDAO(db) {
 
         // Helper function to compare passwords
         function comparePassword(fromDB, fromUser) {
-            return fromDB === fromUser;
+            // return bcrypt.compareSync(fromUser, fromDB); // true
+
+            return decrypt(fromUser) === fromDB;
             //if you encrypt your password, you have to decrypt here
             //better to use the bcrypt.compareSync function
         }
