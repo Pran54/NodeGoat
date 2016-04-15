@@ -21,6 +21,9 @@ function AllocationsHandler(db) {
         var userId = req.params.userId;
 
         allocationsDAO.getByUserId(userId, function(err, docs) {
+            if (req.session.userId != userId) {
+                return next(err);
+            }
             if (err) return next(err);
 
             docs.userId = userId; //set for nav menu items

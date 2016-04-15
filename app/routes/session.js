@@ -56,13 +56,15 @@ function SessionHandler(db) {
                         password: "",
                         loginError: invalidUserNameErrorMessage
                     });
-                } else if (err.invalidPassword) {
+                } 
+                if (err.invalidPassword) {
                     return res.render("login", {
                         userName: userName,
                         password: "",
                         loginError: invalidPasswordErrorMessage
                     });
-                } else {
+                } 
+                if (err) {
                     return next(err);
                 }
             }
